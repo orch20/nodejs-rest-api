@@ -23,7 +23,6 @@ router.get("/", async (req, res, next) => {
 router.get("/:contactId", async (req, res, next) => {
   try {
     const result = await contacts.getContactById(req.params.contactId);
-    console.log(result);
     if (!result) {
       throw RequestError(404, "Contact not found");
     }
@@ -37,7 +36,7 @@ router.post("/", async (req, res, next) => {
   try {
     const { error } = addPattern.validate(req.body);
     if (error) {
-      throw RequestError(400, error.message);
+      throw RequestError(400, "missing required field");
     }
     const result = await contacts.addContact(req.body);
     res.status(201).json(result);
@@ -46,11 +45,33 @@ router.post("/", async (req, res, next) => {
   }
 });
 router.delete("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  try {
+    const { contactId } = req.params;
+    const result = await contacts.removeContact(contactId);
+    if (!result) {
+      throw RequestError(404, "Contact not found");
+    }
+    res.json({ message: "contact successfully deleted" });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.put("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  try {
+    const { error } = addPattern.validate(req.body);
+    if (error) {
+      throw RequestError(400, "missing required field");
+    }
+    const { contactId } = req.params;
+    const result = await contacts.updateContact(contactId, req.body);
+    if (!result) {
+      throw RequestError(404, "Contact not found");
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
