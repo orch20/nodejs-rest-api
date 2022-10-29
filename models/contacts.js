@@ -7,10 +7,11 @@ const contactSchema = new Schema(
     name: {
       type: String,
       required: [true, "Set name for contact"],
-      // unique: true,
     },
     email: {
       type: String,
+      required: [true, "Email is required"],
+      unique: true,
     },
     phone: {
       type: String,
@@ -18,6 +19,16 @@ const contactSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    // subscription: {
+    //   type: String,
+    //   enum: ["starter", "pro", "business"],
+    //   default: "starter",
+    // },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
     },
   },
   {
